@@ -1,6 +1,6 @@
 # UserAuth
 
-Startup authentication flow for React, Node + Express, MySQL using JWT
+Startup authentication flow for React + Vite, Node + Express, MySQL using JWT
 
 # Setup Instructions
 
@@ -22,7 +22,11 @@ Startup authentication flow for React, Node + Express, MySQL using JWT
 3. Create `.env` files in `backend/`
 
 4. Run the server (in `backend/`):
+   ```
    npm run dev
+    ```
 
 5. Run the server (in `frontend/`):
+   ```
    npm run dev
+    ```

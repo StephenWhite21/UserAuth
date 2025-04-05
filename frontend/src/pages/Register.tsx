@@ -15,6 +15,7 @@ const Register = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(formData),
+                    credentials: "include", // if you're using cookies for tokens
                 }
             );
 

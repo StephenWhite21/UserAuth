@@ -1,34 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
+import { useAuth } from "../AuthContext";
 
 const Login = () => {
+    const { login } = useAuth();
+    const navigate = useNavigate();
+
     const handleLogin = async (formData: {
         email: string;
         password: string;
     }) => {
         try {
-            const response = await fetch(
-                "http://localhost:5000/api/auth/login",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(formData),
-                    credentials: "include", // if you're using cookies for tokens
-                }
-            );
-
-            const data = await response.json();
-            if (response.ok) {
-                console.log("Login successful:", data);
-                // Possibly store tokens in localStorage or handle them in cookies
-                // redirect user, etc.
-            } else {
-                console.error("Login error:", data.error);
-            }
+            await login(formData.email, formData.password);
+            console.log("Login successful");
+            navigate("/protected");
         } catch (err) {
-            console.error("Error logging in:", err);
+            console.error("Login error:", err);
         }
     };
 

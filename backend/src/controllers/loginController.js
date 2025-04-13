@@ -36,8 +36,18 @@ const loginUser = async (req, res) => {
             sameSite: 'lax',
         });
 
+        res.cookie('user_id', user.id, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'Strict',
+            signed: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000, 
+        })
+
+        const returnUser = [user.id, user.email];
+
         // 5) Respond
-        res.status(200).json({ message: 'Login success!' });
+        res.status(200).json({ message: 'Login success!', user: returnUser });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });

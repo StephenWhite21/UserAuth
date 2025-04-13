@@ -1,35 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import RegistrationForm from "../components/RegistrationForm";
+import { useAuth } from "../AuthContext";
 
 const Register = () => {
+    const { register } = useAuth();
+    const navigate = useNavigate();
+
     const handleRegister = async (formData: {
         email: string;
         password: string;
     }) => {
         try {
-            const response = await fetch(
-                "http://localhost:5000/api/auth/register",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(formData),
-                    credentials: "include", // if you're using cookies for tokens
-                }
-            );
-
-            const data = await response.json();
-            if (response.ok) {
-                console.log("Registration successful:", data);
-                // Redirect or show success message
-            } else {
-                console.error("Registration error:", data.error);
-                // Show error message to user
-            }
-        } catch (error) {
-            console.error("Error registering:", error);
-            // Handle error
+            await register(formData.email, formData.password);
+            console.log("Registration successful");
+            navigate("/protected");
+        } catch (err) {
+            console.error("Registration error:", err);
         }
     };
 

@@ -22,13 +22,14 @@ const registerUser = async (req, res) => {
 
         // 4) Build user object
         const user = {
-            id: result.insertId
+            id: result.insertId,
+            email: email
         }
 
         // 5) Generate short and long term JWT tokens - stores tokens in db
         const { accessToken, refreshToken } = await generateTokens(user);
 
-        console.log("Tokens generated", accessToken, refreshToken);
+        // console.log("Tokens generated", accessToken, refreshToken);
 
         // 6) Set cookies (httpOnly, secure in production)
         res.cookie('access_token', accessToken, {
@@ -43,8 +44,16 @@ const registerUser = async (req, res) => {
             sameSite: 'lax',
         });
 
+        res.cookie('user_id', user.id, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'Strict',
+            signed: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000, 
+        })
+
         // 7) Return success or JWT
-        return res.status(200).json({ message: 'User registered successfully!' });
+        return res.status(200).json({ message: 'User registered successfully!', user: user });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });

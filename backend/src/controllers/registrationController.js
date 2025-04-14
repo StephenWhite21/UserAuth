@@ -6,7 +6,9 @@ const registerUser = async (req, res) => {
     try {
         // Gather request
         const { email, password } = req.body;
-        
+        const ipAddress = req.ip;
+        const userAgent = req.headers['user-agent'];
+
         // 1) Check if user exists
         const [rows] = await pool.query('select * from users where email = ?', [email]);
         if (rows.length > 0) {
@@ -23,37 +25,23 @@ const registerUser = async (req, res) => {
         // 4) Build user object
         const user = {
             id: result.insertId,
-            email: email
+            email: email,
+            ipAddress: ipAddress,
+            userAgent: userAgent
         }
 
         // 5) Generate short and long term JWT tokens - stores tokens in db
         const { accessToken, refreshToken } = await generateTokens(user);
 
-        // console.log("Tokens generated", accessToken, refreshToken);
-
-        // 6) Set cookies (httpOnly, secure in production)
-        res.cookie('access_token', accessToken, {
-            httpOnly: true,
-            secure: false, // set to true in production with HTTPS
-            sameSite: 'lax', // or 'strict', or 'none' if cross-site
-        });
-
         res.cookie('refresh_token', refreshToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'lax',
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: process.env.COOKIE_MAX_AGE
         });
 
-        res.cookie('user_id', user.id, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'Strict',
-            signed: true,
-            maxAge: 7 * 24 * 60 * 60 * 1000, 
-        })
-
         // 7) Return success or JWT
-        return res.status(200).json({ message: 'User registered successfully!', user: user });
+        return res.status(200).json({ message: 'User registered successfully!', user: user, accessToken: accessToken });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });

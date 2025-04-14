@@ -4,6 +4,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const app = express();
 
+// pull ip in prod
+// app.set('trust proxy', true);
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));

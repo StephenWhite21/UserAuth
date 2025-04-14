@@ -22,11 +22,9 @@ async function generateTokens(user) {
     // For example, if 7 days, 7 * 24 hours * 60 min * 60 sec * 1000 ms
     expiresAt.setTime(expiresAt.getTime() + (7 * 24 * 60 * 60 * 1000));
 
-    // console.log(user);
-
     await pool.query(
-        'insert into tokens (user_id, refresh_token, expires_at) VALUES (?, ?, ?)',
-        [user.id, hashedRefreshToken, expiresAt]
+        'insert into tokens (user_id, refresh_token, user_agent, ip_address, expires_at) VALUES (?, ?, ?, ?, ?)',
+        [user.id, hashedRefreshToken, user.userAgent, user.ipAddress, expiresAt]
     );
 
     return { accessToken, refreshToken }; 
